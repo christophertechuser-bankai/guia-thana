@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia de Atendimento — Dra. Thanaiara</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0ece8;
+  --bg-card:#faf8f5;
+  --bg-script:#f5f2ee;
+  --border:#e0dbd5;
+  --border-light:#ebe7e1;
+  --text:#3a3530;
+  --text-muted:#8a8279;
+  --text-light:#b0a99f;
+  --accent:#8b6f5c;
+  --accent-dark:#6b5548;
+  --accent-light:#c4a98e;
+  --success:#6b8f71;
+  --warning:#b89b4a;
+  --danger:#b85c5c;
+  --white:#fff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-text-size-adjust:100%;min-height:100vh}
+
+/* Nav */
+.top-nav{position:sticky;top:0;z-index:100;background:rgba(240,236,232,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.nav-inner{display:flex;gap:6px;padding:0 16px;min-width:max-content}
+.nav-btn{background:var(--bg-card);color:var(--accent);border:1px solid var(--border);border-radius:20px;padding:7px 13px;font-size:11.5px;font-family:'Inter',sans-serif;font-weight:500;white-space:nowrap;cursor:pointer;transition:all .2s;letter-spacing:.02em}
+.nav-btn:active,.nav-btn:hover{background:var(--accent);color:var(--white);border-color:var(--accent)}
+
+/* Header */
+header{text-align:center;padding:36px 24px 28px;background:var(--bg-card);border-bottom:1px solid var(--border)}
+header .brand{font-family:'Raleway','Inter',sans-serif;font-size:11px;font-weight:400;letter-spacing:.25em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+header h1{font-family:'Raleway','Inter',sans-serif;font-size:26px;font-weight:700;color:var(--text);margin-bottom:2px}
+header .subtitle{font-size:13px;color:var(--text-muted);max-width:340px;margin:8px auto 0;line-height:1.5}
+header .divider{width:40px;height:1px;background:var(--accent-light);margin:16px auto 0}
+
+/* Container */
+.container{max-width:640px;margin:0 auto;padding:8px 12px 100px}
+
+/* Accordion */
+.accordion{background:var(--bg-card);border-radius:12px;margin-top:8px;border:1px solid var(--border-light);overflow:hidden;transition:box-shadow .2s}
+.accordion:hover{box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.accordion-header{display:flex;align-items:center;padding:16px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;gap:10px}
+.accordion-header h2{font-family:'Raleway','Inter',sans-serif;font-size:17px;font-weight:500;color:var(--text);flex:1;letter-spacing:.01em}
+.accordion-header .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--white);font-size:12px;font-weight:600;flex-shrink:0;font-family:'Inter',sans-serif}
+.accordion-header .arrow{font-size:14px;color:var(--text-light);transition:transform .3s ease;flex-shrink:0}
+.accordion.open .arrow{transform:rotate(180deg);color:var(--accent)}
+.accordion-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.accordion.open .accordion-body{max-height:4000px}
+.accordion-content{padding:0 14px 18px}
+
+/* Script blocks */
+.script-block{background:var(--bg-script);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:10px;position:relative;white-space:pre-wrap;font-size:14px;line-height:1.7;color:var(--text)}
+.script-label{font-family:'Raleway','Inter',sans-serif;font-size:13px;font-weight:500;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+
+/* Copy button */
+.copy-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:46px;margin-top:10px;background:var(--accent);color:var(--white);border:none;border-radius:10px;font-size:13.5px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;letter-spacing:.03em;text-transform:uppercase}
+.copy-btn:active{background:var(--accent-dark);transform:scale(.98)}
+.copy-btn.copied{background:var(--success)}
+
+/* Guide box */
+.guide-box{background:var(--bg-script);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:12px;font-size:13px;line-height:1.7}
+.guide-box .item{margin-bottom:8px;padding-left:2px}
+.guide-box .item:last-child{margin-bottom:0}
+
+/* Rules card */
+.rules-card{background:var(--bg-script);border:1.5px solid var(--accent-light);border-radius:12px;padding:20px 16px;margin-top:4px}
+.rules-card h3{font-family:'Raleway','Inter',sans-serif;font-size:18px;font-weight:500;color:var(--accent-dark);margin-bottom:16px;text-align:center}
+.rule{margin-bottom:14px;font-size:13.5px;line-height:1.65;display:flex;align-items:flex-start;gap:8px}
+.rule:last-child{margin-bottom:0}
+.rule strong{color:var(--accent-dark)}
+.rule-num{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--white);font-size:11px;font-weight:600;flex-shrink:0;margin-top:1px}
+
+/* Section divider */
+.section-group-label{font-family:'Raleway','Inter',sans-serif;font-size:13px;font-weight:400;color:var(--text-light);letter-spacing:.15em;text-transform:uppercase;text-align:center;margin:20px 0 4px;padding-top:12px}
+
+/* Mobile tweaks */
+@media(max-width:480px){
+  header h1{font-size:22px}
+  .accordion-header h2{font-size:15.5px}
+  .container{padding:6px 8px 80px}
+  .accordion{margin-top:6px;border-radius:10px}
+}
+</style>
+</head>
+<body>
+
+<nav class="top-nav" id="topNav">
+<div class="nav-inner">
+<button class="nav-btn" onclick="openSection(0)">1o Contato</button>
+<button class="nav-btn" onclick="openSection(1)">Qualificação</button>
+<button class="nav-btn" onclick="openSection(2)">Agendamento</button>
+<button class="nav-btn" onclick="openSection(3)">Preço</button>
+<button class="nav-btn" onclick="openSection(4)">Confirmação</button>
+<button class="nav-btn" onclick="openSection(5)">Pós-consulta</button>
+<button class="nav-btn" onclick="openSection(6)">3 dias</button>
+<button class="nav-btn" onclick="openSection(7)">24h pós</button>
+<button class="nav-btn" onclick="openSection(8)">30 dias</button>
+<button class="nav-btn" onclick="openSection(9)">Upsell</button>
+<button class="nav-btn" onclick="openSection(10)">Indicação</button>
+<button class="nav-btn" onclick="openSection(11)">No-show</button>
+<button class="nav-btn" onclick="openSection(12)">Automática</button>
+<button class="nav-btn" onclick="openSection(13)">Regras</button>
+</div>
+</nav>
+
+<header>
+<div class="brand">Thanaiara R. &nbsp;&middot;&nbsp; Harmonização Facial</div>
+<h1>Guia de Atendimento</h1>
+<p class="subtitle">Copie e personalize. Substitua [nome], [dia/horário] e [endereço] antes de enviar.</p>
+<div class="divider"></div>
+</header>
+
+<div class="container">
+
+<div class="section-group-label">Captação</div>
+
+<!-- 1 -->
+<div class="accordion open" id="sec-0">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">1</span>
+<h2>Primeiro contato (lead novo)</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="script-block" id="s1">Oi, [nome]! Que bom receber sua mensagem. Eu sou a Bruna, da equipe da Dra. Thanaiara.
+
+Para eu te ajudar melhor, posso te fazer 3 perguntinhas rápidas?</div>
+<button class="copy-btn" onclick="copyScript('s1',this)">Copiar</button>
+</div></div>
+</div>
+
+<!-- 2 -->
+<div class="accordion" id="sec-1">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">2</span>
+<h2>Qualificação (3 perguntas)</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="script-block" id="s2">Pergunta 1: Você já fez preenchimento labial antes ou seria a primeira vez?
+
+Pergunta 2: O que te motiva a buscar esse procedimento agora? (Ex: quer mais volume, mais definição, corrigir assimetria...)
+
+Pergunta 3: Você tem disponibilidade para vir até a clínica em Brasília nas próximas 2 semanas para uma consulta presencial com a Dra. Thanaiara?</div>
+<button class="copy-btn" onclick="copyScript('s2',this)">Copiar</button>
+<div class="guide-box">
+<div class="item">🟢 Respondeu as 3 com clareza + tem disponibilidade = <strong>LEAD QUENTE</strong> → agendar imediatamente</div>
+<div class="item">🟡 Respondeu vagamente ou sem disponibilidade = <strong>LEAD MORNO</strong> → manter contato</div>
+<div class="item">🔴 Pediu preço antes de tudo = <strong>LEAD FRIO</strong> → responder com elegância (ver seção 4)</div>
+</div>
+</div></div>
+</div>
+
+<!-- 3 -->
+<div class="accordion" id="sec-2">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">3</span>
+<h2>Agendamento (lead quente)</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="script-block" id="s3">Perfeito, [nome]! A Dra. Thanaiara tem horários disponíveis em [dia/horário] e [dia/horário]. Qual funciona melhor para você?
+
+A Dra. Thanaiara dedica 30 minutos exclusivos para analisar seu rosto e criar um planejamento personalizado. A consulta custa R$100 e, se você seguir com o procedimento, esse valor já entra como parte do pagamento.
+
+Posso reservar o horário para você?</div>
+<button class="copy-btn" onclick="copyScript('s3',this)">Copiar</button>
+</div></div>
+</div>
+
+<!-- 4 -->
+<div class="accordion" id="sec-3">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">4</span>
+<h2>Lead que pergunta preço</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<p class="script-label">Resposta inicial</p>
+<div class="script-block" id="s4a">Entendo sua curiosidade! O valor do procedimento varia de acordo com a quantidade de produto e o planejamento individual que a Dra. Thanaiara faz para cada paciente.
+
+Por isso a consulta presencial é tão importante: a doutora dedica 30 minutos exclusivos para analisar o seu caso, entender o que você deseja e te passar o valor exato, sem surpresas. A consulta custa R$100, que já são descontados se você seguir com o procedimento.
+
+Posso agendar para você?</div>
+<button class="copy-btn" onclick="copyScript('s4a',this)">Copiar</button>
+
+<p class="script-label" style="margin-top:18px">Se insistir no preço sem querer agendar</p>
+<div class="script-block" id="s4b">Compreendo! Infelizmente não consigo passar valores sem a consulta com a doutora, porque cada caso é diferente. Se mudar de ideia, é só me chamar que terei prazer em agendar para você.</div>
+<button class="copy-btn" onclick="copyScript('s4b',this)">Copiar</button>
+</div></div>
+</div>
+
+<div class="section-group-label">Confirmação</div>
+
+<!-- 5 -->
+<div class="accordion" id="sec-4">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">5</span>
+<h2>Confirmação (1 dia antes)</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="script-block" id="s5">Oi, [nome]! Passando para confirmar sua consulta amanhã, [dia], às [horário], com a Dra. Thanaiara. Tudo certo?
+
+Endereço: [endereço completo com referência]
+
+Te esperamos!</div>
+<button class="copy-btn" onclick="copyScript('s5',this)">Copiar</button>
+</div></div>
+</div>
+
+<!-- 12 -->
+<div class="accordion" id="sec-11">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">12</span>
+<h2>No-show (não compareceu)</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="script-block" id="s12">Oi, [nome]! Sentimos sua falta hoje na consulta com a Dra. Thanaiara. Aconteceu alguma coisa? Se quiser reagendar, é só me avisar que encontramos um novo horário para você.</div>
+<button class="copy-btn" onclick="copyScript('s12',this)">Copiar</button>
+</div></div>
+</div>
+
+<div class="section-group-label">Follow-ups</div>
+
+<!-- 6 -->
+<div class="accordion" id="sec-5">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">6</span>
+<h2>Pós-consulta — mesmo dia (não fechou)</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="script-block" id="s6">Oi, [nome]! A Dra. Thanaiara gostou muito de te conhecer. Ficou alguma dúvida sobre o que conversamos? Estou aqui para te ajudar.</div>
+<button class="copy-btn" onclick="copyScript('s6',this)">Copiar</button>
+</div></div>
+</div>
+
+<!-- 7 -->
+<div class="accordion" id="sec-6">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">7</span>
+<h2>Follow-up 3 dias (não respondeu)</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="script-block" id="s7">[nome], sei que é uma decisão importante e não quero te pressionar. Só queria avisar que o planejamento que a doutora fez para você fica disponível por 30 dias. Se decidir seguir, é só me avisar que agendamos.</div>
+<button class="copy-btn" onclick="copyScript('s7',this)">Copiar</button>
+</div></div>
+</div>
+
+<div class="section-group-label">Pós-procedimento</div>
+
+<!-- 8 -->
+<div class="accordion" id="sec-7">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">8</span>
+<h2>Follow-up 24h pós-procedimento</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="script-block" id="s8">Oi, [nome]! Como você está se sentindo? O resultado vai melhorar ainda mais nos próximos 7-14 dias. Qualquer dúvida, estou por aqui!</div>
+<button class="copy-btn" onclick="copyScript('s8',this)">Copiar</button>
+</div></div>
+</div>
+
+<!-- 9 -->
+<div class="accordion" id="sec-8">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">9</span>
+<h2>Follow-up 30 dias</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="script-block" id="s9">Oi, [nome]! Já faz 1 mês do seu preenchimento! Como está se sentindo com o resultado? A Dra. Thanaiara adoraria saber.</div>
+<button class="copy-btn" onclick="copyScript('s9',this)">Copiar</button>
+</div></div>
+</div>
+
+<div class="section-group-label">Upsell e Indicação</div>
+
+<!-- 10 -->
+<div class="accordion" id="sec-9">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">10</span>
+<h2>Upsell (60 dias pós)</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="script-block" id="s10">Oi, [nome]! Tudo bem? Muitas pacientes que fizeram preenchimento labial com a Dra. Thanaiara também se interessam por outros procedimentos como toxina botulínica ou harmonização facial completa. Gostaria de saber mais? Posso te contar como funciona!</div>
+<button class="copy-btn" onclick="copyScript('s10',this)">Copiar</button>
+</div></div>
+</div>
+
+<!-- 11 -->
+<div class="accordion" id="sec-10">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">11</span>
+<h2>Programa de indicação</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="script-block" id="s11">[nome], você sabia que temos um programa de indicação? Se você indicar uma amiga que agendar e realizar um procedimento com a Dra. Thanaiara, você ganha [benefício]. É só pedir para ela mencionar seu nome quando entrar em contato!</div>
+<button class="copy-btn" onclick="copyScript('s11',this)">Copiar</button>
+</div></div>
+</div>
+
+<div class="section-group-label">Utilidades</div>
+
+<!-- 13 -->
+<div class="accordion" id="sec-12">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num">13</span>
+<h2>Mensagem automática</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="script-block" id="s13">Oi! Recebi sua mensagem e vou te responder em poucos minutos. Obrigada pela paciência!</div>
+<button class="copy-btn" onclick="copyScript('s13',this)">Copiar</button>
+</div></div>
+</div>
+
+<!-- Regras -->
+<div class="accordion" id="sec-13">
+<div class="accordion-header" onclick="toggle(this)">
+<span class="num" style="background:var(--accent-dark)">★</span>
+<h2>Regras de ouro</h2>
+<span class="arrow">▾</span>
+</div>
+<div class="accordion-body"><div class="accordion-content">
+<div class="rules-card">
+<h3>Regras de ouro do atendimento</h3>
+<div class="rule"><span class="rule-num">1</span><span><strong>Responder em menos de 5 minutos.</strong> Cada minuto a mais reduz a chance de conversão em ~10%.</span></div>
+<div class="rule"><span class="rule-num">2</span><span><strong>Espelhar o formato.</strong> Lead mandou áudio? Responda em áudio (máx 40s, tom acolhedor). Lead mandou texto? Responda em texto. Primeiro contato SEMPRE em texto.</span></div>
+<div class="rule"><span class="rule-num">3</span><span><strong>Nunca passar preço do procedimento no primeiro contato.</strong> O preço sem contexto sempre parece caro. A consulta (R$100) pode ser informada.</span></div>
+<div class="rule"><span class="rule-num">4</span><span><strong>Nunca discutir ou argumentar.</strong> Se achou caro, agradecer e encerrar com elegância.</span></div>
+<div class="rule"><span class="rule-num">5</span><span><strong>Usar o nome da pessoa sempre.</strong> Gera conexão.</span></div>
+<div class="rule"><span class="rule-num">6</span><span><strong>Nunca copiar e colar sem personalizar.</strong> Substitua [nome], [dia/horário], [endereço] antes de enviar.</span></div>
+<div class="rule"><span class="rule-num">7</span><span><strong>Áudio profissional.</strong> Sem "então...", sem pausas longas, sem ruído de fundo. Tom acolhedor e seguro. Máximo 40 segundos.</span></div>
+</div>
+</div></div>
+</div>
+
+</div>
+
+<script>
+function toggle(header){
+var acc=header.parentElement;
+if(acc.classList.contains('open')){acc.classList.remove('open')}
+else{acc.classList.add('open')}
+}
+function openSection(i){
+var all=document.querySelectorAll('.accordion');
+all.forEach(function(a){a.classList.remove('open')});
+var target=document.getElementById('sec-'+i);
+if(target){target.classList.add('open');target.scrollIntoView({behavior:'smooth',block:'start'})}
+}
+function copyScript(id,btn){
+var el=document.getElementById(id);
+var text=el.textContent;
+if(navigator.clipboard&&navigator.clipboard.writeText){
+navigator.clipboard.writeText(text).then(function(){showCopied(btn)}).catch(function(){fallbackCopy(text,btn)});
+}else{fallbackCopy(text,btn)}
+}
+function fallbackCopy(text,btn){
+var ta=document.createElement('textarea');
+ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';
+document.body.appendChild(ta);ta.select();
+try{document.execCommand('copy');showCopied(btn)}catch(e){}
+document.body.removeChild(ta);
+}
+function showCopied(btn){
+btn.textContent='Copiado! \u2713';btn.classList.add('copied');
+setTimeout(function(){btn.textContent='Copiar';btn.classList.remove('copied')},2000);
+}
+</script>
+</body>
+</html>
