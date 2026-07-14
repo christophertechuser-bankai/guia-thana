@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#faf8f5">
 <title>Guia de Atendimento — Dra. Thanaiara</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -23,6 +26,12 @@
   --warning:#b89b4a;
   --danger:#b85c5c;
   --white:#fff;
+  --pipeline-bg:#e8e3dd;
+  --pipeline-active:#8b6f5c;
+  --pipeline-done:#6b8f71;
+  --decision-bg:#fdf8ef;
+  --decision-border:#e8d9b8;
+  --transition-speed:.35s;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -35,12 +44,28 @@ body{
   padding-bottom:env(safe-area-inset-bottom,0);
 }
 
+/* ══ TRANSITIONS ══ */
+@media(prefers-reduced-motion:no-preference){
+  .phase-view{
+    animation:phaseSlideIn var(--transition-speed) cubic-bezier(.4,0,.2,1);
+  }
+  @keyframes phaseSlideIn{
+    from{opacity:0;transform:translateX(30px)}
+    to{opacity:1;transform:translateX(0)}
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .phase-view{animation:none}
+  .script-card-body{transition:none!important}
+  .sc-arrow{transition:none!important}
+  .pipeline-step{transition:none!important}
+}
+
 /* ══ HEADER ══ */
 .app-header{
   text-align:center;
-  padding:28px 20px 20px;
+  padding:24px 20px 16px;
   background:var(--bg-card);
-  border-bottom:1px solid var(--border);
   position:relative;
 }
 .app-header .brand{
@@ -51,25 +76,131 @@ body{
   font-family:'Raleway',sans-serif;font-size:22px;font-weight:700;color:var(--text);
 }
 .app-header .subtitle{
-  font-size:13px;color:var(--text-muted);margin-top:6px;line-height:1.5;
+  font-size:13px;color:var(--text-muted);margin-top:4px;line-height:1.5;
+}
+
+/* ══ PIPELINE TRACKER ══ */
+.pipeline-wrap{
+  background:var(--bg-card);
+  border-bottom:1px solid var(--border);
+  padding:0 0 16px;
+  overflow:hidden;
+}
+.pipeline-tracker{
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  gap:0;
+  padding:8px 16px 0;
+  max-width:640px;
+  margin:0 auto;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.pipeline-tracker::-webkit-scrollbar{display:none}
+
+.pipeline-step{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  flex:1;
+  min-width:0;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  position:relative;
+  padding:4px 2px;
+  transition:opacity .2s ease;
+}
+.pipeline-step:active{opacity:.7}
+
+.pipeline-dot-row{
+  display:flex;
+  align-items:center;
+  width:100%;
+  position:relative;
+}
+.pipeline-dot{
+  width:28px;height:28px;
+  border-radius:50%;
+  background:var(--pipeline-bg);
+  border:2.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:var(--text-muted);
+  flex-shrink:0;
+  margin:0 auto;
+  position:relative;
+  z-index:2;
+  transition:all .3s ease;
+}
+.pipeline-step.active .pipeline-dot{
+  background:var(--pipeline-active);
+  border-color:var(--pipeline-active);
+  color:var(--white);
+  box-shadow:0 0 0 4px rgba(139,111,92,.15);
+}
+.pipeline-step.done .pipeline-dot{
+  background:var(--pipeline-done);
+  border-color:var(--pipeline-done);
+  color:var(--white);
+}
+
+/* connector lines */
+.pipeline-step:not(:last-child) .pipeline-dot-row::after{
+  content:'';
+  position:absolute;
+  top:50%;
+  left:calc(50% + 16px);
+  right:-2px;
+  height:2px;
+  background:var(--border);
+  z-index:1;
+  transform:translateY(-50%);
+}
+.pipeline-step.done:not(:last-child) .pipeline-dot-row::after{
+  background:var(--pipeline-done);
+}
+.pipeline-step.active:not(:last-child) .pipeline-dot-row::after{
+  background:linear-gradient(to right,var(--pipeline-active),var(--border));
+}
+
+.pipeline-label{
+  font-size:10px;
+  font-weight:500;
+  color:var(--text-muted);
+  text-align:center;
+  line-height:1.25;
+  letter-spacing:.01em;
+  max-width:72px;
+  word-wrap:break-word;
+}
+.pipeline-step.active .pipeline-label{
+  color:var(--accent-dark);
+  font-weight:600;
+}
+.pipeline-step.done .pipeline-label{
+  color:var(--success);
 }
 
 /* ══ BANNER VAGAS ══ */
 .vagas-banner{
   background:linear-gradient(135deg,var(--accent-dark),var(--accent));
-  color:var(--white);padding:18px 20px;text-align:center;
+  color:var(--white);padding:16px 20px;text-align:center;
 }
-.vagas-banner h2{font-family:'Raleway',sans-serif;font-size:16px;font-weight:600;margin-bottom:4px}
-.vagas-banner p{font-size:13px;opacity:.9;margin-bottom:10px}
+.vagas-banner h2{font-family:'Raleway',sans-serif;font-size:15px;font-weight:600;margin-bottom:3px}
+.vagas-banner p{font-size:12.5px;opacity:.9;margin-bottom:8px}
 .vagas-pill{
   display:inline-flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,.18);border-radius:20px;padding:8px 18px;
-  font-size:15px;font-weight:700;
+  background:rgba(255,255,255,.18);border-radius:20px;padding:7px 16px;
+  font-size:14px;font-weight:700;
 }
 .vagas-pill .dot{width:8px;height:8px;border-radius:50%;background:#6bdf6b;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ══ PHASE GRID (home view) ══ */
+#homeView{transition:opacity .2s ease}
 .phase-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -104,6 +235,20 @@ body{
 .phase-card .phase-count{
   font-size:11px;color:var(--text-muted);font-weight:400;
 }
+/* Pipeline badge on cards that are pipeline steps */
+.phase-card .pipeline-badge{
+  position:absolute;top:10px;right:10px;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--accent);color:var(--white);
+  font-size:10px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.phase-card .utility-badge{
+  position:absolute;top:10px;right:10px;
+  font-size:10px;color:var(--text-light);
+  background:var(--bg-script);border-radius:8px;
+  padding:2px 6px;font-weight:500;
+}
 /* Phase colors */
 .phase-card[data-phase="captacao"] .phase-icon{background:rgba(107,143,113,.12);color:#4a7a52}
 .phase-card[data-phase="oferta"] .phase-icon{background:rgba(184,156,74,.12);color:#9a7f2e}
@@ -111,7 +256,6 @@ body{
 .phase-card[data-phase="confirmacao"] .phase-icon{background:rgba(139,111,92,.12);color:var(--accent)}
 .phase-card[data-phase="followup"] .phase-icon{background:rgba(100,140,180,.12);color:#4a7faa}
 .phase-card[data-phase="pos"] .phase-icon{background:rgba(160,120,180,.12);color:#8a5ea0}
-.phase-card[data-phase="upsell"] .phase-icon{background:rgba(200,160,80,.12);color:#b08830}
 .phase-card[data-phase="utils"] .phase-icon{background:rgba(139,111,92,.08);color:var(--accent-light)}
 .phase-card[data-phase="funil"] .phase-icon{background:rgba(107,85,72,.12);color:var(--accent-dark)}
 .phase-card.full-width{grid-column:1/-1}
@@ -121,16 +265,14 @@ body{
   display:none;
   max-width:640px;margin:0 auto;
   padding:0 16px 120px;
-  animation:slideIn .3s ease;
 }
 .phase-view.active{display:block}
-@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 /* Back bar */
 .back-bar{
   position:sticky;top:0;z-index:50;
-  background:rgba(240,236,232,.95);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  background:rgba(240,236,232,.97);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   padding:12px 0;margin:0 -16px;padding-left:16px;padding-right:16px;
   border-bottom:1px solid var(--border);
   display:flex;align-items:center;gap:12px;
@@ -149,6 +291,15 @@ body{
 .back-bar .phase-title{
   font-family:'Raleway',sans-serif;font-size:16px;font-weight:600;color:var(--text);
   flex:1;
+}
+.back-bar .step-indicator{
+  font-size:12px;
+  color:var(--text-muted);
+  font-weight:500;
+  background:var(--bg-script);
+  border-radius:8px;
+  padding:4px 10px;
+  white-space:nowrap;
 }
 
 /* ══ SCRIPT CARDS ══ */
@@ -233,6 +384,103 @@ body{
 }
 .objection-card .objection-a{font-size:15px;line-height:1.65;color:var(--text)}
 
+/* ══ DECISION CARDS ══ */
+.decision-section{
+  margin-top:24px;
+  padding-top:20px;
+  border-top:2px dashed var(--border);
+}
+.decision-header{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:14px;
+}
+.decision-header-icon{
+  width:32px;height:32px;border-radius:10px;
+  background:var(--decision-bg);
+  border:1px solid var(--decision-border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+}
+.decision-header h4{
+  font-family:'Raleway',sans-serif;
+  font-size:15px;font-weight:600;
+  color:var(--text);
+}
+.decision-card{
+  background:var(--decision-bg);
+  border:1px solid var(--decision-border);
+  border-radius:12px;
+  padding:14px 16px;
+  margin-bottom:8px;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:all .2s ease;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:52px;
+}
+.decision-card:active{
+  transform:scale(.98);
+  box-shadow:0 2px 12px rgba(139,111,92,.12);
+}
+.decision-dot{
+  width:10px;height:10px;border-radius:50%;
+  flex-shrink:0;
+}
+.decision-dot.hot{background:#4a7a52}
+.decision-dot.warm{background:var(--warning)}
+.decision-dot.cold{background:var(--danger)}
+.decision-dot.dead{background:var(--text-light)}
+.decision-dot.accept{background:var(--success)}
+.decision-dot.think{background:var(--warning)}
+.decision-dot.expensive{background:var(--danger)}
+.decision-dot.silent{background:var(--text-light)}
+.decision-dot.confirmed{background:var(--success)}
+.decision-dot.noshow{background:var(--danger)}
+
+.decision-text{
+  flex:1;
+  font-size:14px;
+  line-height:1.5;
+  color:var(--text);
+}
+.decision-text strong{
+  color:var(--accent-dark);
+}
+.decision-arrow{
+  font-size:14px;
+  color:var(--accent-light);
+  flex-shrink:0;
+}
+
+/* ══ NEXT STEP BUTTON ══ */
+.next-step-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  min-height:56px;
+  margin-top:20px;
+  background:linear-gradient(135deg,var(--accent-dark),var(--accent));
+  color:var(--white);
+  border:none;
+  border-radius:14px;
+  font-family:'Inter',sans-serif;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:all .2s ease;
+  letter-spacing:.02em;
+  box-shadow:0 4px 16px rgba(139,111,92,.2);
+}
+.next-step-btn:active{
+  transform:scale(.97);
+  box-shadow:0 2px 8px rgba(139,111,92,.15);
+}
+
 /* ══ RULES ══ */
 .rules-card{
   background:var(--bg-script);border:1.5px solid var(--accent-light);
@@ -273,6 +521,9 @@ body{
 
 /* ══ iPAD (768px+) ══ */
 @media(min-width:768px){
+  .pipeline-tracker{max-width:720px;padding:10px 24px 0}
+  .pipeline-dot{width:34px;height:34px;font-size:13px}
+  .pipeline-label{font-size:11px;max-width:90px}
   .phase-grid{grid-template-columns:1fr 1fr 1fr;gap:16px;padding:24px;max-width:720px}
   .phase-card{min-height:140px;padding:24px 20px}
   .phase-card .phase-icon{width:50px;height:50px;font-size:22px}
@@ -280,28 +531,58 @@ body{
   .phase-view{max-width:720px;padding:0 24px 120px}
   .back-bar{margin:0 -24px;padding-left:24px;padding-right:24px}
   .script-block{font-size:15.5px}
-  .vagas-banner h2{font-size:18px}
+  .vagas-banner h2{font-size:17px}
   .app-header h1{font-size:24px}
   .objections-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .decision-card{padding:16px 18px}
 }
 
-/* ══ DESKTOP SAFETY ══ */
+/* ══ DESKTOP (1024px+) ══ */
 @media(min-width:1024px){
+  .pipeline-tracker{max-width:800px}
   .phase-grid{max-width:800px}
   .phase-view{max-width:800px}
+  .pipeline-dot{width:36px;height:36px;font-size:14px}
+  .pipeline-label{font-size:12px;max-width:100px}
 }
 </style>
 </head>
 <body>
 
 <header class="app-header">
-  <div class="brand">Thanaiara R. &middot; Harmonização Facial</div>
+  <div class="brand">Thanaiara R. &middot; Harmoniza&ccedil;&atilde;o Facial</div>
   <h1>Guia de Atendimento</h1>
-  <p class="subtitle">Toque na fase que precisa. Copie e personalize.</p>
+  <p class="subtitle">Siga o fluxo ou toque na fase que precisa.</p>
 </header>
 
+<!-- ══ PIPELINE TRACKER ══ -->
+<div class="pipeline-wrap" id="pipelineWrap">
+  <div class="pipeline-tracker" id="pipelineTracker">
+    <div class="pipeline-step" data-pipeline="1" onclick="navigatePipeline('captacao')">
+      <div class="pipeline-dot-row"><div class="pipeline-dot">1</div></div>
+      <span class="pipeline-label">Capta&ccedil;&atilde;o</span>
+    </div>
+    <div class="pipeline-step" data-pipeline="2" onclick="navigatePipeline('oferta')">
+      <div class="pipeline-dot-row"><div class="pipeline-dot">2</div></div>
+      <span class="pipeline-label">Autoridade + Oferta</span>
+    </div>
+    <div class="pipeline-step" data-pipeline="3" onclick="navigatePipeline('confirmacao')">
+      <div class="pipeline-dot-row"><div class="pipeline-dot">3</div></div>
+      <span class="pipeline-label">Agendamento</span>
+    </div>
+    <div class="pipeline-step" data-pipeline="4" onclick="navigatePipeline('followup')">
+      <div class="pipeline-dot-row"><div class="pipeline-dot">4</div></div>
+      <span class="pipeline-label">Follow-ups</span>
+    </div>
+    <div class="pipeline-step" data-pipeline="5" onclick="navigatePipeline('pos')">
+      <div class="pipeline-dot-row"><div class="pipeline-dot">5</div></div>
+      <span class="pipeline-label">P&oacute;s</span>
+    </div>
+  </div>
+</div>
+
 <div class="vagas-banner">
-  <h2>Ação: 20 Vagas &mdash; Preenchimento Labial</h2>
+  <h2>A&ccedil;&atilde;o: 20 Vagas &mdash; Preenchimento Labial</h2>
   <p>De R$1.500 por R$900 &middot; Duas rodadas de 10</p>
   <div class="vagas-pill"><span class="dot"></span><span id="vagasCount">20</span> vagas restantes</div>
 </div>
@@ -315,49 +596,56 @@ body{
     <div class="phase-card full-width" data-phase="funil" onclick="showPhase('funil')">
       <div class="phase-icon">&#9783;</div>
       <div class="phase-label">Funil Completo</div>
-      <div class="phase-count">Visão geral da ação</div>
+      <div class="phase-count">Vis&atilde;o geral da a&ccedil;&atilde;o</div>
     </div>
 
     <div class="phase-card" data-phase="captacao" onclick="showPhase('captacao')">
       <div class="phase-icon">&#9993;</div>
-      <div class="phase-label">Captação</div>
-      <div class="phase-count">1o contato + qualificação</div>
+      <div class="phase-label">Capta&ccedil;&atilde;o</div>
+      <div class="phase-count">1o contato + qualifica&ccedil;&atilde;o</div>
+      <span class="pipeline-badge">1</span>
     </div>
 
     <div class="phase-card" data-phase="oferta" onclick="showPhase('oferta')">
       <div class="phase-icon">&#9733;</div>
       <div class="phase-label">Autoridade + Oferta</div>
       <div class="phase-count">Gerar valor + 20 vagas</div>
+      <span class="pipeline-badge">2</span>
     </div>
 
     <div class="phase-card" data-phase="confirmacao" onclick="showPhase('confirmacao')">
       <div class="phase-icon">&#10003;</div>
       <div class="phase-label">Agendamento</div>
       <div class="phase-count">Agendar + confirmar</div>
+      <span class="pipeline-badge">3</span>
     </div>
 
     <div class="phase-card" data-phase="objecoes" onclick="showPhase('objecoes')">
       <div class="phase-icon">&#10007;</div>
-      <div class="phase-label">Objeções</div>
+      <div class="phase-label">Obje&ccedil;&otilde;es</div>
       <div class="phase-count">7 respostas prontas</div>
+      <span class="utility-badge">Apoio</span>
     </div>
 
     <div class="phase-card" data-phase="followup" onclick="showPhase('followup')">
       <div class="phase-icon">&#8635;</div>
       <div class="phase-label">Follow-ups</div>
-      <div class="phase-count">No-show + pós-consulta</div>
+      <div class="phase-count">No-show + p&oacute;s-consulta</div>
+      <span class="pipeline-badge">4</span>
     </div>
 
     <div class="phase-card" data-phase="pos" onclick="showPhase('pos')">
       <div class="phase-icon">&#9829;</div>
-      <div class="phase-label">Pós-procedimento</div>
+      <div class="phase-label">P&oacute;s-procedimento</div>
       <div class="phase-count">24h + 30 dias + upsell</div>
+      <span class="pipeline-badge">5</span>
     </div>
 
     <div class="phase-card" data-phase="utils" onclick="showPhase('utils')">
       <div class="phase-icon">&#9881;</div>
       <div class="phase-label">Utilidades</div>
-      <div class="phase-count">Automática + regras</div>
+      <div class="phase-count">Autom&aacute;tica + regras</div>
+      <span class="utility-badge">Apoio</span>
     </div>
 
   </div>
@@ -372,31 +660,34 @@ body{
     <span class="phase-title">Funil Completo</span>
   </div>
 
-  <div class="section-intro">A jornada do lead do anúncio até o pós-procedimento.</div>
+  <div class="section-intro">A jornada do lead do an&uacute;ncio at&eacute; o p&oacute;s-procedimento.</div>
 
   <div class="funnel-visual" style="margin-top:12px">
-    <div class="funnel-step-mini"><span class="step-num">1</span><span class="step-text"><strong>Anúncio Meta Ads</strong> — criativo gera desejo, CTA "Agende sua consulta"</span></div>
-    <div class="funnel-step-mini"><span class="step-num">2</span><span class="step-text"><strong>Lead chega no WhatsApp</strong> — mensagem pré-preenchida</span></div>
-    <div class="funnel-step-mini"><span class="step-num">3</span><span class="step-text"><strong>Bruna acolhe + qualifica</strong> — 3 perguntas rápidas</span></div>
-    <div class="funnel-step-mini"><span class="step-num">4</span><span class="step-text"><strong>Bruna gera autoridade</strong> — resultados da Thana, diferenciais</span></div>
-    <div class="funnel-step-mini"><span class="step-num">5</span><span class="step-text"><strong>Bruna apresenta oferta</strong> — 20 vagas, de R$1.500 por R$900</span></div>
-    <div class="funnel-step-mini"><span class="step-num">6</span><span class="step-text"><strong>Agendamento da consulta</strong> — R$100 (desconta do procedimento)</span></div>
-    <div class="funnel-step-mini"><span class="step-num">7</span><span class="step-text"><strong>Consulta presencial</strong> — Thana fecha o procedimento</span></div>
-    <div class="funnel-step-mini"><span class="step-num">8</span><span class="step-text"><strong>Pós-procedimento</strong> — follow-up + upsell fullface</span></div>
+    <div class="funnel-step-mini"><span class="step-num">1</span><span class="step-text"><strong>An&uacute;ncio Meta Ads</strong> &mdash; criativo gera desejo, CTA "Agende sua consulta"</span></div>
+    <div class="funnel-step-mini"><span class="step-num">2</span><span class="step-text"><strong>Lead chega no WhatsApp</strong> &mdash; mensagem pr&eacute;-preenchida</span></div>
+    <div class="funnel-step-mini"><span class="step-num">3</span><span class="step-text"><strong>Bruna acolhe + qualifica</strong> &mdash; 3 perguntas r&aacute;pidas</span></div>
+    <div class="funnel-step-mini"><span class="step-num">4</span><span class="step-text"><strong>Bruna gera autoridade</strong> &mdash; resultados da Thana, diferenciais</span></div>
+    <div class="funnel-step-mini"><span class="step-num">5</span><span class="step-text"><strong>Bruna apresenta oferta</strong> &mdash; 20 vagas, de R$1.500 por R$900</span></div>
+    <div class="funnel-step-mini"><span class="step-num">6</span><span class="step-text"><strong>Agendamento da consulta</strong> &mdash; R$100 (desconta do procedimento)</span></div>
+    <div class="funnel-step-mini"><span class="step-num">7</span><span class="step-text"><strong>Consulta presencial</strong> &mdash; Thana fecha o procedimento</span></div>
+    <div class="funnel-step-mini"><span class="step-num">8</span><span class="step-text"><strong>P&oacute;s-procedimento</strong> &mdash; follow-up + upsell fullface</span></div>
   </div>
 
   <div class="note-box" style="margin-top:12px">
-    <strong>Importante:</strong> O anúncio NÃO menciona preço, vagas ou promoção. O lead chega com desejo mas sem contexto de oferta. Você apresenta a oportunidade depois de qualificar e gerar autoridade. A escassez é real (20 vagas) — nunca invente números.
+    <strong>Importante:</strong> O an&uacute;ncio N&Atilde;O menciona pre&ccedil;o, vagas ou promo&ccedil;&atilde;o. O lead chega com desejo mas sem contexto de oferta. Voc&ecirc; apresenta a oportunidade depois de qualificar e gerar autoridade. A escassez &eacute; real (20 vagas) &mdash; nunca invente n&uacute;meros.
   </div>
+
+  <button class="next-step-btn" onclick="showPhase('captacao')">Iniciar atendimento &#8594; Capta&ccedil;&atilde;o</button>
 </div>
 
 <!-- ═══════════════════════════════════ -->
-<!-- PHASE: CAPTAÇÃO                     -->
+<!-- PHASE: CAPTACAO                     -->
 <!-- ═══════════════════════════════════ -->
-<div class="phase-view" id="phase-captacao">
+<div class="phase-view" id="phase-captacao" data-pipeline-step="1">
   <div class="back-bar">
     <button class="back-btn" onclick="goHome()">&#8592; Voltar</button>
-    <span class="phase-title">Captação</span>
+    <span class="phase-title">Capta&ccedil;&atilde;o</span>
+    <span class="step-indicator">Etapa 1 de 5</span>
   </div>
 
   <!-- 1o contato -->
@@ -409,50 +700,82 @@ body{
     <div class="script-card-body"><div class="script-card-content">
       <div class="script-block" id="cap1">Oi, [nome]! Que bom receber sua mensagem. Eu sou a Bruna, da equipe da Dra. Thanaiara.
 
-Para eu te ajudar da melhor forma, posso te fazer umas perguntinhas rápidas?</div>
+Para eu te ajudar da melhor forma, posso te fazer umas perguntinhas r&aacute;pidas?</div>
       <button class="copy-btn" onclick="copyScript('cap1',this)">Copiar</button>
 
       <div class="note-box">
-        <strong>Tempo:</strong> Menos de 5 minutos. Cada minuto a mais reduz a chance de conversão em ~10%.
+        <strong>Tempo:</strong> Menos de 5 minutos. Cada minuto a mais reduz a chance de convers&atilde;o em ~10%.
       </div>
     </div></div>
   </div>
 
-  <!-- Qualificação -->
+  <!-- Qualificacao -->
   <div class="script-card">
     <div class="script-card-header" onclick="toggleCard(this)">
       <span class="sc-num">2</span>
-      <h3>Qualificação (3 perguntas)</h3>
+      <h3>Qualifica&ccedil;&atilde;o (3 perguntas)</h3>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="cap2">1. Você já fez preenchimento labial antes ou seria a primeira vez?
+      <div class="script-block" id="cap2">1. Voc&ecirc; j&aacute; fez preenchimento labial antes ou seria a primeira vez?
 
 2. O que te motiva a buscar esse procedimento agora?
 
-3. Você tem disponibilidade para vir até a clínica em Brasília nas próximas 2 semanas?</div>
+3. Voc&ecirc; tem disponibilidade para vir at&eacute; a cl&iacute;nica em Bras&iacute;lia nas pr&oacute;ximas 2 semanas?</div>
       <button class="copy-btn" onclick="copyScript('cap2',this)">Copiar</button>
 
       <div class="guide-box">
         <div class="item">&#x1F7E2; Respondeu com clareza + disponibilidade = <strong>LEAD QUENTE</strong> &#8594; Autoridade + Oferta</div>
         <div class="item">&#x1F7E1; Respondeu vagamente = <strong>LEAD MORNO</strong> &#8594; Autoridade, gerar desejo</div>
-        <div class="item">&#x1F534; Pediu preço direto = <strong>LEAD FRIO</strong> &#8594; ver Objeções</div>
+        <div class="item">&#x1F534; Pediu pre&ccedil;o direto = <strong>LEAD FRIO</strong> &#8594; ver Obje&ccedil;&otilde;es</div>
       </div>
 
       <div class="note-box">
-        <strong>Dica:</strong> Mande as perguntas uma por vez se o lead for tímido. As 3 juntas se a conversa já fluir.
+        <strong>Dica:</strong> Mande as perguntas uma por vez se o lead for t&iacute;mido. As 3 juntas se a conversa j&aacute; fluir.
       </div>
     </div></div>
   </div>
+
+  <!-- DECISION CARDS: After Captacao -->
+  <div class="decision-section">
+    <div class="decision-header">
+      <div class="decision-header-icon">&#9735;</div>
+      <h4>Para onde ir agora?</h4>
+    </div>
+
+    <div class="decision-card" onclick="showPhase('oferta')">
+      <span class="decision-dot hot"></span>
+      <span class="decision-text">Lead quente (respondeu com clareza) &#8594; <strong>Autoridade + Oferta</strong></span>
+      <span class="decision-arrow">&#8250;</span>
+    </div>
+    <div class="decision-card" onclick="showPhase('oferta')">
+      <span class="decision-dot warm"></span>
+      <span class="decision-text">Lead morno (respondeu vagamente) &#8594; <strong>Autoridade + Oferta</strong></span>
+      <span class="decision-arrow">&#8250;</span>
+    </div>
+    <div class="decision-card" onclick="showPhase('objecoes')">
+      <span class="decision-dot cold"></span>
+      <span class="decision-text">Lead frio (pediu pre&ccedil;o direto) &#8594; <strong>Obje&ccedil;&otilde;es</strong></span>
+      <span class="decision-arrow">&#8250;</span>
+    </div>
+    <div class="decision-card" onclick="goHome()">
+      <span class="decision-dot dead"></span>
+      <span class="decision-text">Lead desqualificado (sem disponibilidade / fora de Bras&iacute;lia) &#8594; <strong>Encerrar com eleg&acirc;ncia</strong></span>
+      <span class="decision-arrow">&#8250;</span>
+    </div>
+  </div>
+
+  <button class="next-step-btn" onclick="showPhase('oferta')">Pr&oacute;xima etapa &#8594; Autoridade + Oferta</button>
 </div>
 
 <!-- ═══════════════════════════════════ -->
 <!-- PHASE: AUTORIDADE + OFERTA          -->
 <!-- ═══════════════════════════════════ -->
-<div class="phase-view" id="phase-oferta">
+<div class="phase-view" id="phase-oferta" data-pipeline-step="2">
   <div class="back-bar">
     <button class="back-btn" onclick="goHome()">&#8592; Voltar</button>
     <span class="phase-title">Autoridade + Oferta</span>
+    <span class="step-indicator">Etapa 2 de 5</span>
   </div>
 
   <!-- Autoridade -->
@@ -465,31 +788,31 @@ Para eu te ajudar da melhor forma, posso te fazer umas perguntinhas rápidas?</d
     <div class="script-card-body"><div class="script-card-content">
 
       <p class="script-label">Para primeira vez</p>
-      <div class="script-block" id="aut1">[nome], que legal! A primeira vez é sempre especial. Você tá no lugar certo.
+      <div class="script-block" id="aut1">[nome], que legal! A primeira vez &eacute; sempre especial. Voc&ecirc; t&aacute; no lugar certo.
 
-A Dra. Thanaiara é biomédica esteta e trabalha com muito cuidado em cada procedimento. Ela mede e planeja tudo antes de aplicar, justamente pra garantir um resultado que fica bonito e natural no seu rosto.
+A Dra. Thanaiara &eacute; biom&eacute;dica esteta e trabalha com muito cuidado em cada procedimento. Ela mede e planeja tudo antes de aplicar, justamente pra garantir um resultado que fica bonito e natural no seu rosto.
 
 Olha alguns resultados de pacientes dela:</div>
       <button class="copy-btn" onclick="copyScript('aut1',this)">Copiar</button>
 
-      <p class="script-label">Para quem já fez antes</p>
-      <div class="script-block" id="aut2">[nome], que bom que você já conhece o procedimento! Então sabe a diferença que faz escolher a profissional certa.
+      <p class="script-label">Para quem j&aacute; fez antes</p>
+      <div class="script-block" id="aut2">[nome], que bom que voc&ecirc; j&aacute; conhece o procedimento! Ent&atilde;o sabe a diferen&ccedil;a que faz escolher a profissional certa.
 
-A Dra. Thanaiara é biomédica esteta e cada procedimento dela é planejado do zero. Ela analisa o rosto inteiro, mede proporção, e só aplica quando tem certeza do resultado. Nada de receita pronta.
+A Dra. Thanaiara &eacute; biom&eacute;dica esteta e cada procedimento dela &eacute; planejado do zero. Ela analisa o rosto inteiro, mede propor&ccedil;&atilde;o, e s&oacute; aplica quando tem certeza do resultado. Nada de receita pronta.
 
-Vou te mandar alguns resultados pra você ver o trabalho dela:</div>
+Vou te mandar alguns resultados pra voc&ecirc; ver o trabalho dela:</div>
       <button class="copy-btn" onclick="copyScript('aut2',this)">Copiar</button>
 
       <p class="script-label">Para quem veio empolgada</p>
       <div class="script-block" id="aut3">Amei sua energia, [nome]! Vou te contar um pouco mais sobre a Dra. Thanaiara.
 
-Ela é biomédica esteta e o diferencial dela é a atenção aos detalhes. Ela dedica tempo pra entender o que cada paciente quer e trabalha com milímetros de precisão. O resultado fica bonito porque respeita o rosto da pessoa.
+Ela &eacute; biom&eacute;dica esteta e o diferencial dela &eacute; a aten&ccedil;&atilde;o aos detalhes. Ela dedica tempo pra entender o que cada paciente quer e trabalha com mil&iacute;metros de precis&atilde;o. O resultado fica bonito porque respeita o rosto da pessoa.
 
-Olha só:</div>
+Olha s&oacute;:</div>
       <button class="copy-btn" onclick="copyScript('aut3',this)">Copiar</button>
 
       <div class="note-box">
-        <strong>Após enviar:</strong> Mande 2-3 fotos de antes/depois reais da Thana. Escolha casos com resultado natural e sutil. Se possível, um caso parecido com o perfil da lead.
+        <strong>Ap&oacute;s enviar:</strong> Mande 2-3 fotos de antes/depois reais da Thana. Escolha casos com resultado natural e sutil. Se poss&iacute;vel, um caso parecido com o perfil da lead.
       </div>
     </div></div>
   </div>
@@ -503,42 +826,74 @@ Olha só:</div>
     </div>
     <div class="script-card-body"><div class="script-card-content">
 
-      <p class="script-label">Lead reagiu bem às fotos</p>
+      <p class="script-label">Lead reagiu bem &agrave;s fotos</p>
       <div class="script-block" id="of1">[nome], eu tenho uma novidade pra te contar.
 
-A Dra. Thanaiara abriu uma ação especial de preenchimento labial com condição exclusiva. São apenas 20 vagas.
+A Dra. Thanaiara abriu uma a&ccedil;&atilde;o especial de preenchimento labial com condi&ccedil;&atilde;o exclusiva. S&atilde;o apenas 20 vagas.
 
-O preenchimento labial, que normalmente custa R$1.500, nessa ação sai por R$900.
+O preenchimento labial, que normalmente custa R$1.500, nessa a&ccedil;&atilde;o sai por R$900.
 
-Das 20 vagas, já foram preenchidas [X]. Restam [Y].
+Das 20 vagas, j&aacute; foram preenchidas [X]. Restam [Y].
 
 Se tiver interesse, posso reservar a sua?</div>
       <button class="copy-btn" onclick="copyScript('of1',this)">Copiar</button>
 
       <p class="script-label">Follow-up de escassez</p>
-      <div class="script-block" id="of2">[nome], só pra te manter atualizada: das 20 vagas da ação especial de preenchimento labial, já foram [X]. Não quero que você perca se tiver interesse. Posso te contar mais?</div>
+      <div class="script-block" id="of2">[nome], s&oacute; pra te manter atualizada: das 20 vagas da a&ccedil;&atilde;o especial de preenchimento labial, j&aacute; foram [X]. N&atilde;o quero que voc&ecirc; perca se tiver interesse. Posso te contar mais?</div>
       <button class="copy-btn" onclick="copyScript('of2',this)">Copiar</button>
 
       <div class="guide-box">
         <div class="item"><strong>Rodada 1:</strong> Vagas 1 a 10. Quando fechar 10, comunique que abriu a segunda rodada.</div>
         <div class="item"><strong>Rodada 2:</strong> Vagas 11 a 20. Quando restar 5, intensifique a escassez.</div>
-        <div class="item"><strong>Contagem real:</strong> Mantenha anotação com nome + data de cada vaga. A escassez precisa ser verdadeira.</div>
+        <div class="item"><strong>Contagem real:</strong> Mantenha anota&ccedil;&atilde;o com nome + data de cada vaga. A escassez precisa ser verdadeira.</div>
       </div>
 
       <div class="note-box">
-        <strong>Nunca:</strong> Mencione o preço antes de gerar autoridade. O desconto só tem valor quando a lead já entendeu o trabalho da Thana.
+        <strong>Nunca:</strong> Mencione o pre&ccedil;o antes de gerar autoridade. O desconto s&oacute; tem valor quando a lead j&aacute; entendeu o trabalho da Thana.
       </div>
     </div></div>
   </div>
+
+  <!-- DECISION CARDS: After Autoridade + Oferta -->
+  <div class="decision-section">
+    <div class="decision-header">
+      <div class="decision-header-icon">&#9735;</div>
+      <h4>Para onde ir agora?</h4>
+    </div>
+
+    <div class="decision-card" onclick="showPhase('confirmacao')">
+      <span class="decision-dot accept"></span>
+      <span class="decision-text">Lead aceitou a oferta &#8594; <strong>Agendamento</strong></span>
+      <span class="decision-arrow">&#8250;</span>
+    </div>
+    <div class="decision-card" onclick="showPhase('objecoes')">
+      <span class="decision-dot think"></span>
+      <span class="decision-text">Lead disse "vou pensar" &#8594; <strong>Obje&ccedil;&otilde;es ("Vou pensar")</strong></span>
+      <span class="decision-arrow">&#8250;</span>
+    </div>
+    <div class="decision-card" onclick="showPhase('objecoes')">
+      <span class="decision-dot expensive"></span>
+      <span class="decision-text">Lead disse "t&aacute; caro" &#8594; <strong>Obje&ccedil;&otilde;es ("T&aacute; caro")</strong></span>
+      <span class="decision-arrow">&#8250;</span>
+    </div>
+    <div class="decision-card" onclick="showPhase('followup')">
+      <span class="decision-dot silent"></span>
+      <span class="decision-text">Lead n&atilde;o respondeu &#8594; <strong>Follow-ups</strong></span>
+      <span class="decision-arrow">&#8250;</span>
+    </div>
+  </div>
+
+  <button class="next-step-btn" onclick="showPhase('confirmacao')">Pr&oacute;xima etapa &#8594; Agendamento</button>
 </div>
 
 <!-- ═══════════════════════════════════ -->
-<!-- PHASE: AGENDAMENTO + CONFIRMAÇÃO    -->
+<!-- PHASE: AGENDAMENTO + CONFIRMACAO    -->
 <!-- ═══════════════════════════════════ -->
-<div class="phase-view" id="phase-confirmacao">
+<div class="phase-view" id="phase-confirmacao" data-pipeline-step="3">
   <div class="back-bar">
     <button class="back-btn" onclick="goHome()">&#8592; Voltar</button>
     <span class="phase-title">Agendamento</span>
+    <span class="step-indicator">Etapa 3 de 5</span>
   </div>
 
   <div class="script-card open">
@@ -550,19 +905,19 @@ Se tiver interesse, posso reservar a sua?</div>
     <div class="script-card-body"><div class="script-card-content">
 
       <p class="script-label">Lead aceitou a oferta</p>
-      <div class="script-block" id="ag1">Que ótimo, [nome]! Vou reservar sua vaga.
+      <div class="script-block" id="ag1">Que &oacute;timo, [nome]! Vou reservar sua vaga.
 
-O primeiro passo é a consulta presencial com a Dra. Thanaiara. Ela dedica 30 minutos exclusivos para analisar seu rosto e criar o planejamento personalizado.
+O primeiro passo &eacute; a consulta presencial com a Dra. Thanaiara. Ela dedica 30 minutos exclusivos para analisar seu rosto e criar o planejamento personalizado.
 
-A consulta custa R$100 e esse valor já é descontado do procedimento.
+A consulta custa R$100 e esse valor j&aacute; &eacute; descontado do procedimento.
 
-Temos horários em [dia/horário] e [dia/horário]. Qual funciona melhor pra você?</div>
+Temos hor&aacute;rios em [dia/hor&aacute;rio] e [dia/hor&aacute;rio]. Qual funciona melhor pra voc&ecirc;?</div>
       <button class="copy-btn" onclick="copyScript('ag1',this)">Copiar</button>
 
       <p class="script-label">Se perguntar se pode fazer sem consulta</p>
-      <div class="script-block" id="ag2">Entendo, [nome]! A consulta é parte do processo da Dra. Thanaiara. Ela faz questão de ver seu rosto pessoalmente, entender o que você deseja e planejar cada detalhe antes de aplicar.
+      <div class="script-block" id="ag2">Entendo, [nome]! A consulta &eacute; parte do processo da Dra. Thanaiara. Ela faz quest&atilde;o de ver seu rosto pessoalmente, entender o que voc&ecirc; deseja e planejar cada detalhe antes de aplicar.
 
-É assim que ela garante que o resultado fique perfeito pra você. E os R$100 da consulta já entram como parte do pagamento do procedimento.
+&Eacute; assim que ela garante que o resultado fique perfeito pra voc&ecirc;. E os R$100 da consulta j&aacute; entram como parte do pagamento do procedimento.
 
 Posso agendar?</div>
       <button class="copy-btn" onclick="copyScript('ag2',this)">Copiar</button>
@@ -572,18 +927,18 @@ Posso agendar?</div>
   <div class="script-card">
     <div class="script-card-header" onclick="toggleCard(this)">
       <span class="sc-num">2</span>
-      <h3>Confirmação do agendamento</h3>
+      <h3>Confirma&ccedil;&atilde;o do agendamento</h3>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="ag3">Perfeito, [nome]! Sua consulta está confirmada:
+      <div class="script-block" id="ag3">Perfeito, [nome]! Sua consulta est&aacute; confirmada:
 
-&#128197; [dia], às [horário]
-&#128205; [endereço completo com referência]
+&#128197; [dia], &agrave;s [hor&aacute;rio]
+&#128205; [endere&ccedil;o completo com refer&ecirc;ncia]
 &#128105;&#8205;&#9877;&#65039; Dra. Thanaiara R.
 &#128176; Consulta: R$100 (descontados do procedimento)
 
-Sua vaga da ação especial fica reservada. Te esperamos!</div>
+Sua vaga da a&ccedil;&atilde;o especial fica reservada. Te esperamos!</div>
       <button class="copy-btn" onclick="copyScript('ag3',this)">Copiar</button>
     </div></div>
   </div>
@@ -595,26 +950,48 @@ Sua vaga da ação especial fica reservada. Te esperamos!</div>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="ag4">Oi, [nome]! Passando para confirmar sua consulta amanhã, [dia], às [horário], com a Dra. Thanaiara. Tudo certo?
+      <div class="script-block" id="ag4">Oi, [nome]! Passando para confirmar sua consulta amanh&atilde;, [dia], &agrave;s [hor&aacute;rio], com a Dra. Thanaiara. Tudo certo?
 
-&#128205; [endereço completo com referência]
+&#128205; [endere&ccedil;o completo com refer&ecirc;ncia]
 
 Te esperamos!</div>
       <button class="copy-btn" onclick="copyScript('ag4',this)">Copiar</button>
     </div></div>
   </div>
+
+  <!-- DECISION CARDS: After Agendamento -->
+  <div class="decision-section">
+    <div class="decision-header">
+      <div class="decision-header-icon">&#9735;</div>
+      <h4>Para onde ir agora?</h4>
+    </div>
+
+    <div class="decision-card" onclick="showPhase('pos')">
+      <span class="decision-dot confirmed"></span>
+      <span class="decision-text">Consulta confirmada &#8594; <strong>Aguardar / P&oacute;s-procedimento</strong></span>
+      <span class="decision-arrow">&#8250;</span>
+    </div>
+    <div class="decision-card" onclick="showPhase('followup')">
+      <span class="decision-dot noshow"></span>
+      <span class="decision-text">Lead n&atilde;o compareceu &#8594; <strong>Follow-ups (No-show)</strong></span>
+      <span class="decision-arrow">&#8250;</span>
+    </div>
+  </div>
+
+  <button class="next-step-btn" onclick="showPhase('followup')">Pr&oacute;xima etapa &#8594; Follow-ups</button>
 </div>
 
 <!-- ═══════════════════════════════════ -->
-<!-- PHASE: OBJEÇÕES                     -->
+<!-- PHASE: OBJECOES                     -->
 <!-- ═══════════════════════════════════ -->
 <div class="phase-view" id="phase-objecoes">
   <div class="back-bar">
     <button class="back-btn" onclick="goHome()">&#8592; Voltar</button>
-    <span class="phase-title">Objeções</span>
+    <span class="phase-title">Obje&ccedil;&otilde;es</span>
+    <span class="step-indicator">Apoio</span>
   </div>
 
-  <div class="section-intro">Respostas prontas para as objeções mais comuns. Toque para expandir.</div>
+  <div class="section-intro">Respostas prontas para as obje&ccedil;&otilde;es mais comuns. Toque para expandir.</div>
 
   <div class="objections-grid">
 
@@ -625,9 +1002,9 @@ Te esperamos!</div>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="obj1">Entendo a curiosidade, [nome]! O valor do preenchimento labial com a Dra. Thanaiara normalmente é R$1.500.
+      <div class="script-block" id="obj1">Entendo a curiosidade, [nome]! O valor do preenchimento labial com a Dra. Thanaiara normalmente &eacute; R$1.500.
 
-Mas antes de falar de valor, deixa eu te mostrar um pouco do trabalho dela, porque acho importante você conhecer. Posso te mandar alguns resultados?</div>
+Mas antes de falar de valor, deixa eu te mostrar um pouco do trabalho dela, porque acho importante voc&ecirc; conhecer. Posso te mandar alguns resultados?</div>
       <button class="copy-btn" onclick="copyScript('obj1',this)">Copiar</button>
     </div></div>
   </div>
@@ -635,15 +1012,15 @@ Mas antes de falar de valor, deixa eu te mostrar um pouco do trabalho dela, porq
   <div class="script-card">
     <div class="script-card-header" onclick="toggleCard(this)">
       <span class="sc-num" style="background:var(--danger)">!</span>
-      <h3>"Tá caro"</h3>
+      <h3>"T&aacute; caro"</h3>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="obj2">Entendo, [nome]. E faz sentido você pensar nisso com cuidado.
+      <div class="script-block" id="obj2">Entendo, [nome]. E faz sentido voc&ecirc; pensar nisso com cuidado.
 
-O preenchimento labial é um procedimento que fica no seu rosto, então a escolha da profissional faz toda a diferença. A Dra. Thanaiara trabalha com produtos de alta qualidade e planeja cada detalhe do procedimento.
+O preenchimento labial &eacute; um procedimento que fica no seu rosto, ent&atilde;o a escolha da profissional faz toda a diferen&ccedil;a. A Dra. Thanaiara trabalha com produtos de alta qualidade e planeja cada detalhe do procedimento.
 
-Inclusive, estamos com uma ação especial de 20 vagas onde o preenchimento sai por R$900 (normalmente R$1.500). Ainda temos [Y] vagas. Gostaria de saber mais?</div>
+Inclusive, estamos com uma a&ccedil;&atilde;o especial de 20 vagas onde o preenchimento sai por R$900 (normalmente R$1.500). Ainda temos [Y] vagas. Gostaria de saber mais?</div>
       <button class="copy-btn" onclick="copyScript('obj2',this)">Copiar</button>
     </div></div>
   </div>
@@ -655,11 +1032,11 @@ Inclusive, estamos com uma ação especial de 20 vagas onde o preenchimento sai 
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="obj3">[nome], esse é o medo mais comum e a Dra. Thanaiara entende perfeitamente. Ela inclusive diz que também não quer resultado artificial.
+      <div class="script-block" id="obj3">[nome], esse &eacute; o medo mais comum e a Dra. Thanaiara entende perfeitamente. Ela inclusive diz que tamb&eacute;m n&atilde;o quer resultado artificial.
 
-Por isso ela mede e planeja tudo antes. O resultado dela é natural justamente porque ela respeita a proporção do rosto de cada paciente.
+Por isso ela mede e planeja tudo antes. O resultado dela &eacute; natural justamente porque ela respeita a propor&ccedil;&atilde;o do rosto de cada paciente.
 
-Vou te mandar umas fotos de resultado pra você ver como fica:</div>
+Vou te mandar umas fotos de resultado pra voc&ecirc; ver como fica:</div>
       <button class="copy-btn" onclick="copyScript('obj3',this)">Copiar</button>
     </div></div>
   </div>
@@ -671,9 +1048,9 @@ Vou te mandar umas fotos de resultado pra você ver como fica:</div>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="obj4">Claro, [nome]! Fica à vontade. Só te aviso que as vagas da ação especial são limitadas (restam [Y] das 20) e não temos previsão de quando vamos abrir de novo.
+      <div class="script-block" id="obj4">Claro, [nome]! Fica &agrave; vontade. S&oacute; te aviso que as vagas da a&ccedil;&atilde;o especial s&atilde;o limitadas (restam [Y] das 20) e n&atilde;o temos previs&atilde;o de quando vamos abrir de novo.
 
-Quando decidir, é só me chamar que vejo se ainda tem vaga disponível pra você.</div>
+Quando decidir, &eacute; s&oacute; me chamar que vejo se ainda tem vaga dispon&iacute;vel pra voc&ecirc;.</div>
       <button class="copy-btn" onclick="copyScript('obj4',this)">Copiar</button>
     </div></div>
   </div>
@@ -685,9 +1062,9 @@ Quando decidir, é só me chamar que vejo se ainda tem vaga disponível pra voc�
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="obj5">Claro, [nome]! Conversa com ele sim. Se quiser, posso te mandar um resumo com as informações pra facilitar na hora de explicar: o que é o procedimento, como funciona, e os valores.
+      <div class="script-block" id="obj5">Claro, [nome]! Conversa com ele sim. Se quiser, posso te mandar um resumo com as informa&ccedil;&otilde;es pra facilitar na hora de explicar: o que &eacute; o procedimento, como funciona, e os valores.
 
-Quando tiver uma posição, me avisa que vejo quantas vagas ainda temos.</div>
+Quando tiver uma posi&ccedil;&atilde;o, me avisa que vejo quantas vagas ainda temos.</div>
       <button class="copy-btn" onclick="copyScript('obj5',this)">Copiar</button>
     </div></div>
   </div>
@@ -699,11 +1076,11 @@ Quando tiver uma posição, me avisa que vejo quantas vagas ainda temos.</div>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="obj6">Entendo, [nome]. Preenchimento labial tem uma variação grande de preço no mercado.
+      <div class="script-block" id="obj6">Entendo, [nome]. Preenchimento labial tem uma varia&ccedil;&atilde;o grande de pre&ccedil;o no mercado.
 
-O que muda é a qualidade do produto, a técnica e o cuidado no planejamento. A Dra. Thanaiara trabalha com produtos premium e faz questão de planejar cada procedimento individualmente.
+O que muda &eacute; a qualidade do produto, a t&eacute;cnica e o cuidado no planejamento. A Dra. Thanaiara trabalha com produtos premium e faz quest&atilde;o de planejar cada procedimento individualmente.
 
-A decisão é sua, e respeito qualquer escolha. Se quiser conhecer o trabalho dela de perto, a consulta é o melhor caminho.</div>
+A decis&atilde;o &eacute; sua, e respeito qualquer escolha. Se quiser conhecer o trabalho dela de perto, a consulta &eacute; o melhor caminho.</div>
       <button class="copy-btn" onclick="copyScript('obj6',this)">Copiar</button>
     </div></div>
   </div>
@@ -711,15 +1088,15 @@ A decisão é sua, e respeito qualquer escolha. Se quiser conhecer o trabalho de
   <div class="script-card">
     <div class="script-card-header" onclick="toggleCard(this)">
       <span class="sc-num" style="background:var(--danger)">&#128137;</span>
-      <h3>"Dói muito?" / Recuperação</h3>
+      <h3>"D&oacute;i muito?" / Recupera&ccedil;&atilde;o</h3>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="obj7">[nome], a Dra. Thanaiara usa anestesia tópica antes da aplicação, então o incômodo é bem leve. A maioria das pacientes diz que é bem mais tranquilo do que imaginavam.
+      <div class="script-block" id="obj7">[nome], a Dra. Thanaiara usa anestesia t&oacute;pica antes da aplica&ccedil;&atilde;o, ent&atilde;o o inc&ocirc;modo &eacute; bem leve. A maioria das pacientes diz que &eacute; bem mais tranquilo do que imaginavam.
 
-Sobre recuperação: pode ter um leve inchaço nas primeiras 24-48h, mas nada que impeça a rotina normal. O resultado final aparece em 7 a 14 dias.
+Sobre recupera&ccedil;&atilde;o: pode ter um leve incha&ccedil;o nas primeiras 24-48h, mas nada que impe&ccedil;a a rotina normal. O resultado final aparece em 7 a 14 dias.
 
-Quer que eu agende uma consulta pra você conversar pessoalmente com a doutora sobre todas as dúvidas?</div>
+Quer que eu agende uma consulta pra voc&ecirc; conversar pessoalmente com a doutora sobre todas as d&uacute;vidas?</div>
       <button class="copy-btn" onclick="copyScript('obj7',this)">Copiar</button>
     </div></div>
   </div>
@@ -730,28 +1107,29 @@ Quer que eu agende uma consulta pra você conversar pessoalmente com a doutora s
 <!-- ═══════════════════════════════════ -->
 <!-- PHASE: FOLLOW-UPS                   -->
 <!-- ═══════════════════════════════════ -->
-<div class="phase-view" id="phase-followup">
+<div class="phase-view" id="phase-followup" data-pipeline-step="4">
   <div class="back-bar">
     <button class="back-btn" onclick="goHome()">&#8592; Voltar</button>
     <span class="phase-title">Follow-ups</span>
+    <span class="step-indicator">Etapa 4 de 5</span>
   </div>
 
   <div class="script-card open">
     <div class="script-card-header" onclick="toggleCard(this)">
       <span class="sc-num">1</span>
-      <h3>No-show (não compareceu)</h3>
+      <h3>No-show (n&atilde;o compareceu)</h3>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
       <div class="script-block" id="fu1">Oi, [nome]! Sentimos sua falta hoje na consulta com a Dra. Thanaiara. Aconteceu alguma coisa?
 
-Sua vaga da ação especial ainda está reservada. Se quiser reagendar, me avisa que encontramos um novo horário.</div>
+Sua vaga da a&ccedil;&atilde;o especial ainda est&aacute; reservada. Se quiser reagendar, me avisa que encontramos um novo hor&aacute;rio.</div>
       <button class="copy-btn" onclick="copyScript('fu1',this)">Copiar</button>
 
-      <p class="script-label">Se não responder em 24h</p>
-      <div class="script-block" id="fu1b">[nome], sua vaga da ação especial fica reservada por mais 48h. Depois disso, vou precisar liberar pra outra pessoa da lista de espera.
+      <p class="script-label">Se n&atilde;o responder em 24h</p>
+      <div class="script-block" id="fu1b">[nome], sua vaga da a&ccedil;&atilde;o especial fica reservada por mais 48h. Depois disso, vou precisar liberar pra outra pessoa da lista de espera.
 
-Sem pressão, só quero te manter informada. Se quiser reagendar, é só me chamar.</div>
+Sem press&atilde;o, s&oacute; quero te manter informada. Se quiser reagendar, &eacute; s&oacute; me chamar.</div>
       <button class="copy-btn" onclick="copyScript('fu1b',this)">Copiar</button>
     </div></div>
   </div>
@@ -759,13 +1137,13 @@ Sem pressão, só quero te manter informada. Se quiser reagendar, é só me cham
   <div class="script-card">
     <div class="script-card-header" onclick="toggleCard(this)">
       <span class="sc-num">2</span>
-      <h3>Pós-consulta (não fechou)</h3>
+      <h3>P&oacute;s-consulta (n&atilde;o fechou)</h3>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="fu2">Oi, [nome]! A Dra. Thanaiara gostou muito de te conhecer. Ficou alguma dúvida sobre o planejamento que ela fez pra você?
+      <div class="script-block" id="fu2">Oi, [nome]! A Dra. Thanaiara gostou muito de te conhecer. Ficou alguma d&uacute;vida sobre o planejamento que ela fez pra voc&ecirc;?
 
-Lembrando que sua vaga da ação especial (R$900) ainda está reservada. Estou aqui se precisar.</div>
+Lembrando que sua vaga da a&ccedil;&atilde;o especial (R$900) ainda est&aacute; reservada. Estou aqui se precisar.</div>
       <button class="copy-btn" onclick="copyScript('fu2',this)">Copiar</button>
     </div></div>
   </div>
@@ -777,9 +1155,9 @@ Lembrando que sua vaga da ação especial (R$900) ainda está reservada. Estou a
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="fu3">[nome], sei que é uma decisão importante e não quero te pressionar. Só queria te atualizar: das 20 vagas da ação especial, restam [Y].
+      <div class="script-block" id="fu3">[nome], sei que &eacute; uma decis&atilde;o importante e n&atilde;o quero te pressionar. S&oacute; queria te atualizar: das 20 vagas da a&ccedil;&atilde;o especial, restam [Y].
 
-O planejamento que a doutora fez pra você fica disponível por 30 dias. Se decidir seguir, é só me avisar.</div>
+O planejamento que a doutora fez pra voc&ecirc; fica dispon&iacute;vel por 30 dias. Se decidir seguir, &eacute; s&oacute; me avisar.</div>
       <button class="copy-btn" onclick="copyScript('fu3',this)">Copiar</button>
     </div></div>
   </div>
@@ -787,37 +1165,40 @@ O planejamento que a doutora fez pra você fica disponível por 30 dias. Se deci
   <div class="script-card">
     <div class="script-card-header" onclick="toggleCard(this)">
       <span class="sc-num">4</span>
-      <h3>Follow-up 7 dias (último)</h3>
+      <h3>Follow-up 7 dias (&uacute;ltimo)</h3>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="fu4">Oi, [nome]! Passando pela última vez sobre a ação especial. Das 20 vagas, restam apenas [Y].
+      <div class="script-block" id="fu4">Oi, [nome]! Passando pela &uacute;ltima vez sobre a a&ccedil;&atilde;o especial. Das 20 vagas, restam apenas [Y].
 
-Não vou mais insistir, prometo. Mas se em algum momento decidir, pode me chamar que vejo se ainda tem disponibilidade. Foi um prazer te atender!</div>
+N&atilde;o vou mais insistir, prometo. Mas se em algum momento decidir, pode me chamar que vejo se ainda tem disponibilidade. Foi um prazer te atender!</div>
       <button class="copy-btn" onclick="copyScript('fu4',this)">Copiar</button>
     </div></div>
   </div>
+
+  <button class="next-step-btn" onclick="showPhase('pos')">Pr&oacute;xima etapa &#8594; P&oacute;s-procedimento</button>
 </div>
 
 <!-- ═══════════════════════════════════ -->
-<!-- PHASE: PÓS-PROCEDIMENTO             -->
+<!-- PHASE: POS-PROCEDIMENTO             -->
 <!-- ═══════════════════════════════════ -->
-<div class="phase-view" id="phase-pos">
+<div class="phase-view" id="phase-pos" data-pipeline-step="5">
   <div class="back-bar">
     <button class="back-btn" onclick="goHome()">&#8592; Voltar</button>
-    <span class="phase-title">Pós-procedimento</span>
+    <span class="phase-title">P&oacute;s-procedimento</span>
+    <span class="step-indicator">Etapa 5 de 5</span>
   </div>
 
   <div class="script-card open">
     <div class="script-card-header" onclick="toggleCard(this)">
       <span class="sc-num">1</span>
-      <h3>24h após o procedimento</h3>
+      <h3>24h ap&oacute;s o procedimento</h3>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="pos1">Oi, [nome]! Como você tá se sentindo? O resultado vai melhorar ainda mais nos próximos 7 a 14 dias, tá?
+      <div class="script-block" id="pos1">Oi, [nome]! Como voc&ecirc; t&aacute; se sentindo? O resultado vai melhorar ainda mais nos pr&oacute;ximos 7 a 14 dias, t&aacute;?
 
-Se tiver qualquer dúvida sobre cuidados, estou aqui!</div>
+Se tiver qualquer d&uacute;vida sobre cuidados, estou aqui!</div>
       <button class="copy-btn" onclick="copyScript('pos1',this)">Copiar</button>
     </div></div>
   </div>
@@ -825,13 +1206,13 @@ Se tiver qualquer dúvida sobre cuidados, estou aqui!</div>
   <div class="script-card">
     <div class="script-card-header" onclick="toggleCard(this)">
       <span class="sc-num">2</span>
-      <h3>30 dias após</h3>
+      <h3>30 dias ap&oacute;s</h3>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="pos2">Oi, [nome]! Já faz 1 mês do seu preenchimento! Como tá se sentindo com o resultado?
+      <div class="script-block" id="pos2">Oi, [nome]! J&aacute; faz 1 m&ecirc;s do seu preenchimento! Como t&aacute; se sentindo com o resultado?
 
-A Dra. Thanaiara adoraria saber. E se quiser, pode nos enviar uma foto que a gente ama acompanhar a evolução das pacientes.</div>
+A Dra. Thanaiara adoraria saber. E se quiser, pode nos enviar uma foto que a gente ama acompanhar a evolu&ccedil;&atilde;o das pacientes.</div>
       <button class="copy-btn" onclick="copyScript('pos2',this)">Copiar</button>
     </div></div>
   </div>
@@ -839,11 +1220,11 @@ A Dra. Thanaiara adoraria saber. E se quiser, pode nos enviar uma foto que a gen
   <div class="script-card">
     <div class="script-card-header" onclick="toggleCard(this)">
       <span class="sc-num">3</span>
-      <h3>Upsell (60 dias após)</h3>
+      <h3>Upsell (60 dias ap&oacute;s)</h3>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="pos3">Oi, [nome]! Tudo bem? Passando pra saber se você gostaria de conhecer outros procedimentos da Dra. Thanaiara. Muitas pacientes que fizeram preenchimento labial se interessam por toxina botulínica ou harmonização facial.
+      <div class="script-block" id="pos3">Oi, [nome]! Tudo bem? Passando pra saber se voc&ecirc; gostaria de conhecer outros procedimentos da Dra. Thanaiara. Muitas pacientes que fizeram preenchimento labial se interessam por toxina botul&iacute;nica ou harmoniza&ccedil;&atilde;o facial.
 
 Se tiver curiosidade, posso te contar como funciona e os valores.</div>
       <button class="copy-btn" onclick="copyScript('pos3',this)">Copiar</button>
@@ -858,16 +1239,17 @@ Se tiver curiosidade, posso te contar como funciona e os valores.</div>
   <div class="back-bar">
     <button class="back-btn" onclick="goHome()">&#8592; Voltar</button>
     <span class="phase-title">Utilidades</span>
+    <span class="step-indicator">Apoio</span>
   </div>
 
   <div class="script-card open">
     <div class="script-card-header" onclick="toggleCard(this)">
       <span class="sc-num">1</span>
-      <h3>Mensagem automática</h3>
+      <h3>Mensagem autom&aacute;tica</h3>
       <span class="sc-arrow">&#9662;</span>
     </div>
     <div class="script-card-body"><div class="script-card-content">
-      <div class="script-block" id="ut1">Oi! Que bom que você chegou até aqui. Recebi sua mensagem e vou te responder em poucos minutos. Obrigada pela paciência!</div>
+      <div class="script-block" id="ut1">Oi! Que bom que voc&ecirc; chegou at&eacute; aqui. Recebi sua mensagem e vou te responder em poucos minutos. Obrigada pela paci&ecirc;ncia!</div>
       <button class="copy-btn" onclick="copyScript('ut1',this)">Copiar</button>
     </div></div>
   </div>
@@ -881,15 +1263,15 @@ Se tiver curiosidade, posso te contar como funciona e os valores.</div>
     <div class="script-card-body"><div class="script-card-content">
       <div class="rules-card">
         <h3>Regras de ouro do atendimento</h3>
-        <div class="rule"><span class="rule-num">1</span><span><strong>Responder em menos de 5 minutos.</strong> Cada minuto a mais reduz a chance de conversão em ~10%.</span></div>
-        <div class="rule"><span class="rule-num">2</span><span><strong>Espelhar o formato.</strong> Lead mandou áudio? Responda em áudio (máx 40s). Lead mandou texto? Responda em texto. Primeiro contato SEMPRE em texto.</span></div>
-        <div class="rule"><span class="rule-num">3</span><span><strong>Nunca pular a etapa de autoridade.</strong> Se a lead não viu resultados da Thana antes de saber do preço, o preço sempre parece caro.</span></div>
-        <div class="rule"><span class="rule-num">4</span><span><strong>Escassez real.</strong> Controle quantas vagas restam. Nunca invente números.</span></div>
-        <div class="rule"><span class="rule-num">5</span><span><strong>Nunca discutir ou argumentar.</strong> Se achou caro, agradeça e encerre com elegância.</span></div>
-        <div class="rule"><span class="rule-num">6</span><span><strong>Usar o nome da pessoa sempre.</strong> Gera conexão imediata.</span></div>
-        <div class="rule"><span class="rule-num">7</span><span><strong>Nunca copiar e colar sem personalizar.</strong> Substitua [nome], [dia/horário], [endereço], [X] e [Y].</span></div>
-        <div class="rule"><span class="rule-num">8</span><span><strong>Áudio profissional.</strong> Sem "então...", sem pausas longas, sem ruído. Tom acolhedor. Máximo 40 segundos.</span></div>
-        <div class="rule"><span class="rule-num">9</span><span><strong>Anotar objeções.</strong> Toda objeção nova que aparecer com frequência, anota e avisa a equipe.</span></div>
+        <div class="rule"><span class="rule-num">1</span><span><strong>Responder em menos de 5 minutos.</strong> Cada minuto a mais reduz a chance de convers&atilde;o em ~10%.</span></div>
+        <div class="rule"><span class="rule-num">2</span><span><strong>Espelhar o formato.</strong> Lead mandou &aacute;udio? Responda em &aacute;udio (m&aacute;x 40s). Lead mandou texto? Responda em texto. Primeiro contato SEMPRE em texto.</span></div>
+        <div class="rule"><span class="rule-num">3</span><span><strong>Nunca pular a etapa de autoridade.</strong> Se a lead n&atilde;o viu resultados da Thana antes de saber do pre&ccedil;o, o pre&ccedil;o sempre parece caro.</span></div>
+        <div class="rule"><span class="rule-num">4</span><span><strong>Escassez real.</strong> Controle quantas vagas restam. Nunca invente n&uacute;meros.</span></div>
+        <div class="rule"><span class="rule-num">5</span><span><strong>Nunca discutir ou argumentar.</strong> Se achou caro, agrade&ccedil;a e encerre com eleg&acirc;ncia.</span></div>
+        <div class="rule"><span class="rule-num">6</span><span><strong>Usar o nome da pessoa sempre.</strong> Gera conex&atilde;o imediata.</span></div>
+        <div class="rule"><span class="rule-num">7</span><span><strong>Nunca copiar e colar sem personalizar.</strong> Substitua [nome], [dia/hor&aacute;rio], [endere&ccedil;o], [X] e [Y].</span></div>
+        <div class="rule"><span class="rule-num">8</span><span><strong>&Aacute;udio profissional.</strong> Sem "ent&atilde;o...", sem pausas longas, sem ru&iacute;do. Tom acolhedor. M&aacute;ximo 40 segundos.</span></div>
+        <div class="rule"><span class="rule-num">9</span><span><strong>Anotar obje&ccedil;&otilde;es.</strong> Toda obje&ccedil;&atilde;o nova que aparecer com frequ&ecirc;ncia, anota e avisa a equipe.</span></div>
         <div class="rule"><span class="rule-num">10</span><span><strong>A ordem importa.</strong> Qualificar &#8594; Autoridade &#8594; Oferta &#8594; Agendar. Nunca pule etapas.</span></div>
       </div>
     </div></div>
@@ -897,42 +1279,107 @@ Se tiver curiosidade, posso te contar como funciona e os valores.</div>
 </div>
 
 <script>
-function showPhase(id){
-  document.getElementById('homeView').style.display='none';
-  document.querySelectorAll('.phase-view').forEach(function(v){v.classList.remove('active')});
-  var target=document.getElementById('phase-'+id);
-  if(target){
+/* ═══ Pipeline state ═══ */
+var pipelineMap = {
+  captacao: 1,
+  oferta: 2,
+  confirmacao: 3,
+  followup: 4,
+  pos: 5
+};
+var currentPhase = null;
+
+function updatePipeline(phaseId) {
+  var stepNum = pipelineMap[phaseId] || 0;
+  var steps = document.querySelectorAll('.pipeline-step');
+  steps.forEach(function(s) {
+    var n = parseInt(s.getAttribute('data-pipeline'));
+    s.classList.remove('active', 'done');
+    if (stepNum > 0) {
+      if (n < stepNum) s.classList.add('done');
+      else if (n === stepNum) s.classList.add('active');
+    }
+  });
+}
+
+function navigatePipeline(phaseId) {
+  showPhase(phaseId);
+}
+
+function showPhase(id) {
+  currentPhase = id;
+  document.getElementById('homeView').style.display = 'none';
+  document.querySelectorAll('.phase-view').forEach(function(v) {
+    v.classList.remove('active');
+  });
+  var target = document.getElementById('phase-' + id);
+  if (target) {
     target.classList.add('active');
-    window.scrollTo({top:0,behavior:'instant'});
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  updatePipeline(id);
+  // Show pipeline in phase views, hide on home
+  document.getElementById('pipelineWrap').style.display = '';
+}
+
+function goHome() {
+  currentPhase = null;
+  document.querySelectorAll('.phase-view').forEach(function(v) {
+    v.classList.remove('active');
+  });
+  document.getElementById('homeView').style.display = '';
+  // Reset pipeline visual
+  document.querySelectorAll('.pipeline-step').forEach(function(s) {
+    s.classList.remove('active', 'done');
+  });
+  document.getElementById('pipelineWrap').style.display = '';
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function toggleCard(header) {
+  var card = header.parentElement;
+  if (card.classList.contains('open')) {
+    card.classList.remove('open');
+  } else {
+    card.classList.add('open');
   }
 }
-function goHome(){
-  document.querySelectorAll('.phase-view').forEach(function(v){v.classList.remove('active')});
-  document.getElementById('homeView').style.display='';
-  window.scrollTo({top:0,behavior:'instant'});
+
+function copyScript(id, btn) {
+  var el = document.getElementById(id);
+  var text = el.textContent;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      showCopied(btn);
+    }).catch(function() {
+      fallbackCopy(text, btn);
+    });
+  } else {
+    fallbackCopy(text, btn);
+  }
 }
-function toggleCard(header){
-  var card=header.parentElement;
-  if(card.classList.contains('open')){card.classList.remove('open')}
-  else{card.classList.add('open')}
-}
-function copyScript(id,btn){
-  var el=document.getElementById(id);
-  var text=el.textContent;
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(function(){showCopied(btn)}).catch(function(){fallbackCopy(text,btn)});
-  }else{fallbackCopy(text,btn)}
-}
-function fallbackCopy(text,btn){
-  var ta=document.createElement('textarea');
-  ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';
-  document.body.appendChild(ta);ta.select();
-  try{document.execCommand('copy');showCopied(btn)}catch(e){}
+
+function fallbackCopy(text, btn) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showCopied(btn);
+  } catch (e) {}
   document.body.removeChild(ta);
 }
-function showCopied(btn){
-  btn.textContent='Copiado! \u2713';btn.classList.add('copied');
-  setTimeout(function(){btn.textContent='Copiar';btn.classList.remove('copied')},2000);
+
+function showCopied(btn) {
+  btn.textContent = 'Copiado! \u2713';
+  btn.classList.add('copied');
+  setTimeout(function() {
+    btn.textContent = 'Copiar';
+    btn.classList.remove('copied');
+  }, 2000);
 }
 </script>
 </body>
